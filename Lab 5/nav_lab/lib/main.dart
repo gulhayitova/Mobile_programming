@@ -10,15 +10,18 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Color _color = Colors.grey;
+  int _value = 0;
 
-  Future<void> _choose() async {
-    final c = await Navigator.push<Color>(
+  Future<void> _edit() async {
+    final result = await Navigator.push<int>(
       context,
-      MaterialPageRoute(builder: (context) => const ChooseColourScreen()),
+      MaterialPageRoute(builder: (context) => EditorScreen(initial: _value)),
     );
     if (!mounted) return;
-    if (c != null) setState(() => _color = c);
+    // Back arrow / system back gives null: keep the old value.
+    if (result != null) {
+      setState(() => _value = result);
+    }
   }
 
   @override
@@ -29,12 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(width: 150, height: 150, color: _color),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _choose,
-              child: const Text('Choose colour'),
-            ),
+            Text('Value: $_value', style: const TextStyle(fontSize: 32)),
+            const SizedBox(height: 16),
+            ElevatedButton(onPressed: _edit, child: const Text('Edit')),
           ],
         ),
       ),
@@ -42,34 +42,46 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class ChooseColourScreen extends StatelessWidget {
-  const ChooseColourScreen({super.key});
+class EditorScreen extends StatefulWidget {
+  final int initial;
+  const EditorScreen({super.key, required this.initial});
 
-  Widget _button(BuildContext context, String label, Color color) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: Colors.white,
-        minimumSize: const Size(160, 48),
-      ),
-      onPressed: () => Navigator.pop(context, color),
-      child: Text(label),
-    );
-  }
+  @override
+  State<EditorScreen> createState() => _EditorScreenState();
+}
+
+class _EditorScreenState extends State<EditorScreen> {
+  late int _value = widget.initial;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Choose colour')),
+      appBar: AppBar(title: const Text('Editor')),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _button(context, 'Red', Colors.red),
-            const SizedBox(height: 12),
-            _button(context, 'Green', Colors.green),
-            const SizedBox(height: 12),
-            _button(context, 'Blue', Colors.blue),
+            Text('$_value', style: const TextStyle(fontSize: 48)),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton(
+                  onPressed: () => setState(() => _value--),
+                  child: const Text('-'),
+                ),
+                const SizedBox(width: 16),
+                ElevatedButton(
+                  onPressed: () => setState(() => _value++),
+                  child: const Text('+'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context, _value),
+              child: const Text('Save'),
+            ),
           ],
         ),
       ),
