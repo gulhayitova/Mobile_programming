@@ -1,70 +1,86 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MaterialApp(home: InputScreen()));
-
-class InputScreen extends StatefulWidget {
-  const InputScreen({super.key});
-
-  @override
-  State<InputScreen> createState() => _InputScreenState();
+class Contact {
+  final String name;
+  final String phone;
+  final String email;
+  const Contact(this.name, this.phone, this.email);
 }
 
-class _InputScreenState extends State<InputScreen> {
-  final _controller = TextEditingController();
+const contacts = [
+  Contact('Aziza Karimova', '+998 90 123 45 67', 'aziza@example.com'),
+  Contact('Bobur Rakhimov', '+998 91 234 56 78', 'bobur@example.com'),
+  Contact('Dilnoza Yusupova', '+998 93 345 67 89', 'dilnoza@example.com'),
+  Contact('Jasur Tashkentov', '+998 94 456 78 90', 'jasur@example.com'),
+  Contact('Malika Sodiqova', '+998 97 567 89 01', 'malika@example.com'),
+];
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+void main() => runApp(const MaterialApp(home: ContactListScreen()));
+
+class ContactListScreen extends StatelessWidget {
+  const ContactListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Enter your name')),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                labelText: 'Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              child: const Text('Greet'),
-              onPressed: () {
-                final name = _controller.text.trim();
+      appBar: AppBar(title: const Text('Contacts')),
+      body: ListView(
+        children: [
+          for (final c in contacts)
+            ListTile(
+              leading: CircleAvatar(child: Text(c.name[0])),
+              title: Text(c.name),
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        GreetingScreen(name: name.isEmpty ? 'stranger' : name),
+                    builder: (context) => ContactScreen(contact: c),
                   ),
                 );
               },
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
 }
 
-class GreetingScreen extends StatelessWidget {
-  final String name;
-  const GreetingScreen({super.key, required this.name});
+class ContactScreen extends StatelessWidget {
+  final Contact contact;
+  const ContactScreen({super.key, required this.contact});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Greeting')),
+      appBar: AppBar(title: Text(contact.name)),
       body: Center(
-        child: Text('Hello, $name!', style: const TextStyle(fontSize: 32)),
+        child: Card(
+          elevation: 6,
+          margin: const EdgeInsets.all(24),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(contact.name,
+                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                Row(children: [
+                  const Icon(Icons.phone),
+                  const SizedBox(width: 8),
+                  Text(contact.phone),
+                ]),
+                const SizedBox(height: 8),
+                Row(children: [
+                  const Icon(Icons.email),
+                  const SizedBox(width: 8),
+                  Text(contact.email),
+                ]),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
