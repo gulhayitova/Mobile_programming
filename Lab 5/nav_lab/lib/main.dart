@@ -1,42 +1,42 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MaterialApp(home: RootScreen()));
-
-/// Shows "Back" if there is something to pop, otherwise it is disabled.
-class BackOrExitButton extends StatelessWidget {
-  const BackOrExitButton({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final canPop = Navigator.canPop(context);
-    return ElevatedButton(
-      onPressed: canPop ? () => Navigator.pop(context) : null,
-      child: Text(canPop ? 'Back' : 'Nothing to go back to'),
-    );
-  }
+class AppRoutes {
+  static const home = '/';
+  static const about = '/about';
 }
 
-class RootScreen extends StatelessWidget {
-  const RootScreen({super.key});
+void main() {
+  runApp(MaterialApp(
+    initialRoute: AppRoutes.home,
+    routes: {
+      AppRoutes.home: (context) => const HomeScreen(),
+      AppRoutes.about: (context) => const AboutScreen(),
+    },
+    // Called when a route name is not in the table.
+    onUnknownRoute: (settings) =>
+        MaterialPageRoute(builder: (context) => const NotFoundScreen()),
+  ));
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Root screen')),
+      appBar: AppBar(title: const Text('Home')),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const BackOrExitButton(), // disabled: nothing to pop
-            const SizedBox(height: 16),
             ElevatedButton(
-              child: const Text('Open pushed screen'),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const PushedScreen()),
-                );
-              },
+              child: const Text('About (exists)'),
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.about),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              child: const Text('Open missing page'),
+              onPressed: () => Navigator.pushNamed(context, '/does-not-exist'),
             ),
           ],
         ),
@@ -45,14 +45,40 @@ class RootScreen extends StatelessWidget {
   }
 }
 
-class PushedScreen extends StatelessWidget {
-  const PushedScreen({super.key});
+class AboutScreen extends StatelessWidget {
+  const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pushed screen')),
-      body: const Center(child: BackOrExitButton()), // enabled: can pop
+      appBar: AppBar(title: const Text('About')),
+      body: const Center(child: Text('About screen')),
+    );
+  }
+}
+
+class NotFoundScreen extends StatelessWidget {
+  const NotFoundScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('404'), backgroundColor: Colors.red),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
+            const SizedBox(height: 12),
+            const Text('Page not found', style: TextStyle(fontSize: 24)),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              child: const Text('Go back'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
