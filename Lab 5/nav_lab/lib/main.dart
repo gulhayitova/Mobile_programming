@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppRoutes {
   static const home = '/';
+  static const profile = '/profile';
+  static const messages = '/messages';
   static const about = '/about';
 }
 
@@ -9,76 +11,61 @@ void main() {
   runApp(MaterialApp(
     initialRoute: AppRoutes.home,
     routes: {
-      AppRoutes.home: (context) => const HomeScreen(),
-      AppRoutes.about: (context) => const AboutScreen(),
+      AppRoutes.home: (context) => const SectionScreen(title: 'Home'),
+      AppRoutes.profile: (context) => const SectionScreen(title: 'Profile'),
+      AppRoutes.messages: (context) => const SectionScreen(title: 'Messages'),
+      AppRoutes.about: (context) => const SectionScreen(title: 'About'),
     },
-    // Called when a route name is not in the table.
-    onUnknownRoute: (settings) =>
-        MaterialPageRoute(builder: (context) => const NotFoundScreen()),
   ));
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class AppDrawer extends StatelessWidget {
+  const AppDrawer({super.key});
+
+  Widget _item(BuildContext context, IconData icon, String label, String route) {
+    final current = ModalRoute.of(context)?.settings.name;
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(label),
+      selected: current == route,
+      onTap: () {
+        Navigator.pop(context); // close the drawer first
+        if (current != route) {
+          // Replace, so the stack does not grow when switching sections.
+          Navigator.pushReplacementNamed(context, route);
+        }
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ElevatedButton(
-              child: const Text('About (exists)'),
-              onPressed: () => Navigator.pushNamed(context, AppRoutes.about),
-            ),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              child: const Text('Open missing page'),
-              onPressed: () => Navigator.pushNamed(context, '/does-not-exist'),
-            ),
-          ],
-        ),
+    return Drawer(
+      child: ListView(
+        children: [
+          const DrawerHeader(
+            child: Text('Menu', style: TextStyle(fontSize: 24)),
+          ),
+          _item(context, Icons.home, 'Home', AppRoutes.home),
+          _item(context, Icons.person, 'Profile', AppRoutes.profile),
+          _item(context, Icons.message, 'Messages', AppRoutes.messages),
+          _item(context, Icons.info, 'About', AppRoutes.about),
+        ],
       ),
     );
   }
 }
 
-class AboutScreen extends StatelessWidget {
-  const AboutScreen({super.key});
+class SectionScreen extends StatelessWidget {
+  final String title;
+  const SectionScreen({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('About')),
-      body: const Center(child: Text('About screen')),
-    );
-  }
-}
-
-class NotFoundScreen extends StatelessWidget {
-  const NotFoundScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('404'), backgroundColor: Colors.red),
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.error_outline, size: 64, color: Colors.red),
-            const SizedBox(height: 12),
-            const Text('Page not found', style: TextStyle(fontSize: 24)),
-            const SizedBox(height: 12),
-            ElevatedButton(
-              child: const Text('Go back'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      ),
+      appBar: AppBar(title: Text(title)),
+      drawer: const AppDrawer(),
+      body: Center(child: Text('$title section', style: const TextStyle(fontSize: 24))),
     );
   }
 }
