@@ -1,85 +1,76 @@
 import 'package:flutter/material.dart';
 
-class Contact {
-  final String name;
-  final String phone;
-  final String email;
-  const Contact(this.name, this.phone, this.email);
+void main() => runApp(const MaterialApp(home: HomeScreen()));
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-const contacts = [
-  Contact('Aziza Karimova', '+998 90 123 45 67', 'aziza@example.com'),
-  Contact('Bobur Rakhimov', '+998 91 234 56 78', 'bobur@example.com'),
-  Contact('Dilnoza Yusupova', '+998 93 345 67 89', 'dilnoza@example.com'),
-  Contact('Jasur Tashkentov', '+998 94 456 78 90', 'jasur@example.com'),
-  Contact('Malika Sodiqova', '+998 97 567 89 01', 'malika@example.com'),
-];
+class _HomeScreenState extends State<HomeScreen> {
+  Color _color = Colors.grey;
 
-void main() => runApp(const MaterialApp(home: ContactListScreen()));
-
-class ContactListScreen extends StatelessWidget {
-  const ContactListScreen({super.key});
+  Future<void> _choose() async {
+    final c = await Navigator.push<Color>(
+      context,
+      MaterialPageRoute(builder: (context) => const ChooseColourScreen()),
+    );
+    if (!mounted) return;
+    if (c != null) setState(() => _color = c);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Contacts')),
-      body: ListView(
-        children: [
-          for (final c in contacts)
-            ListTile(
-              leading: CircleAvatar(child: Text(c.name[0])),
-              title: Text(c.name),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ContactScreen(contact: c),
-                  ),
-                );
-              },
+      appBar: AppBar(title: const Text('Home')),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(width: 150, height: 150, color: _color),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: _choose,
+              child: const Text('Choose colour'),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
 
-class ContactScreen extends StatelessWidget {
-  final Contact contact;
-  const ContactScreen({super.key, required this.contact});
+class ChooseColourScreen extends StatelessWidget {
+  const ChooseColourScreen({super.key});
+
+  Widget _button(BuildContext context, String label, Color color) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        minimumSize: const Size(160, 48),
+      ),
+      onPressed: () => Navigator.pop(context, color),
+      child: Text(label),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(contact.name)),
+      appBar: AppBar(title: const Text('Choose colour')),
       body: Center(
-        child: Card(
-          elevation: 6,
-          margin: const EdgeInsets.all(24),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(contact.name,
-                    style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                Row(children: [
-                  const Icon(Icons.phone),
-                  const SizedBox(width: 8),
-                  Text(contact.phone),
-                ]),
-                const SizedBox(height: 8),
-                Row(children: [
-                  const Icon(Icons.email),
-                  const SizedBox(width: 8),
-                  Text(contact.email),
-                ]),
-              ],
-            ),
-          ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _button(context, 'Red', Colors.red),
+            const SizedBox(height: 12),
+            _button(context, 'Green', Colors.green),
+            const SizedBox(height: 12),
+            _button(context, 'Blue', Colors.blue),
+          ],
         ),
       ),
     );
