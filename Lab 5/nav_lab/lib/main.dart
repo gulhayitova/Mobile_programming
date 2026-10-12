@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MaterialApp(home: ScreenA()));
+void main() => runApp(const MaterialApp(home: LoginScreen()));
 
-class ScreenA extends StatelessWidget {
-  const ScreenA({super.key});
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Screen A'),
-        backgroundColor: Colors.blue,
-      ),
+      appBar: AppBar(title: const Text('Login')),
       body: Center(
         child: ElevatedButton(
-          child: const Text('Next'),
+          child: const Text('Sign in'),
           onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const ScreenB()),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
             );
           },
         ),
@@ -27,46 +24,15 @@ class ScreenA extends StatelessWidget {
   }
 }
 
-class ScreenB extends StatelessWidget {
-  const ScreenB({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Screen B'),
-        backgroundColor: Colors.green,
-      ),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text('Next'),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const ScreenC()),
-            );
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class ScreenC extends StatelessWidget {
-  const ScreenC({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Screen C'),
-        backgroundColor: Colors.orange,
-      ),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text('Back'),
-          onPressed: () => Navigator.pop(context), // returns to B
-        ),
+      appBar: AppBar(title: const Text('Home')),
+      body: const Center(
+        child: Text('Welcome!', style: TextStyle(fontSize: 24)),
       ),
     );
   }
