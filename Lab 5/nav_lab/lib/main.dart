@@ -1,52 +1,67 @@
 import 'package:flutter/material.dart';
 
+class User {
+  final String name;
+  final int age;
+  final String city;
+  const User(this.name, this.age, this.city);
+}
+
+const users = [
+  User('Aziza', 24, 'Tashkent'),
+  User('Bobur', 31, 'Samarkand'),
+  User('Dilnoza', 28, 'Bukhara'),
+  User('Jasur', 22, 'Namangan'),
+];
+
 void main() {
   runApp(MaterialApp(
     initialRoute: '/',
     routes: {
-      '/': (context) => const HomeScreen(),
-      '/square': (context) => const SquareScreen(),
+      '/': (context) => const UserListScreen(),
+      '/profile': (context) => const ProfileScreen(),
     },
   ));
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class UserListScreen extends StatelessWidget {
+  const UserListScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Pick a number')),
-      body: Center(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final n in [1, 2, 3])
-              Padding(
-                padding: const EdgeInsets.all(8),
-                child: ElevatedButton(
-                  child: Text('$n'),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, '/square', arguments: n),
-                ),
-              ),
-          ],
-        ),
+      appBar: AppBar(title: const Text('Users')),
+      body: ListView(
+        children: [
+          for (final u in users)
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: Text(u.name),
+              onTap: () => Navigator.pushNamed(context, '/profile', arguments: u),
+            ),
+        ],
       ),
     );
   }
 }
 
-class SquareScreen extends StatelessWidget {
-  const SquareScreen({super.key});
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final n = ModalRoute.of(context)!.settings.arguments as int;
+    final user = ModalRoute.of(context)!.settings.arguments as User;
     return Scaffold(
-      appBar: AppBar(title: const Text('Square')),
+      appBar: AppBar(title: Text(user.name)),
       body: Center(
-        child: Text('$n squared is ${n * n}', style: const TextStyle(fontSize: 28)),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Name: ${user.name}', style: const TextStyle(fontSize: 24)),
+            Text('Age: ${user.age}', style: const TextStyle(fontSize: 24)),
+            Text('City: ${user.city}', style: const TextStyle(fontSize: 24)),
+          ],
+        ),
       ),
     );
   }
