@@ -23,7 +23,16 @@ class TickerPage extends ConsumerWidget {
         },
         child: child,
       );
+// g7h
 
+/* er
+ewr
+*/
+
+/// h8oiij
+/// 
+/// 
+/// 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ticks = ref.watch(tickerProvider);
